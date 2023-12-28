@@ -65,6 +65,10 @@ parser.add_argument('-p',
                     '--password',
                     default='',
                     help='Proxmox API password')
+parser.add_argument('-r',
+                    '--running-only',
+                    help='Count only running guests',
+                    action="store_true")
 parser.add_argument('-s',
                     '--storage',
                     help='get storage data / storage discovery data',
@@ -312,13 +316,14 @@ for vm in proxmox.cluster.resources.get(type='vm'):
         cluster_data['status']['vm_templates'] += 1
         continue
     # update cluster total metrics
-    cluster_data['status']['vcpu_allocated'] += vm.get('maxcpu', 0)
-    cluster_data['status']['vram_allocated'] += vm.get('maxmem', 0)
-    cluster_data['status']['vram_used'] += vm.get('mem', 0)
-    # update individual node metrics
-    cluster_data['nodes'][vm['node']]['vcpu_allocated'] += vm.get('maxcpu', 0)
-    cluster_data['nodes'][vm['node']]['vram_allocated'] += vm.get('maxmem', 0)
-    cluster_data['nodes'][vm['node']]['vram_used'] += vm.get('mem', 0)
+    if args.running_only == False or vm.get('status', 'unknown') == 'running':
+        cluster_data['status']['vcpu_allocated'] += vm.get('maxcpu', 0)
+        cluster_data['status']['vram_allocated'] += vm.get('maxmem', 0)
+        cluster_data['status']['vram_used'] += vm.get('mem', 0)
+        # update individual node metrics
+        cluster_data['nodes'][vm['node']]['vcpu_allocated'] += vm.get('maxcpu', 0)
+        cluster_data['nodes'][vm['node']]['vram_allocated'] += vm.get('maxmem', 0)
+        cluster_data['nodes'][vm['node']]['vram_used'] += vm.get('mem', 0)
     # if this is a qemu vm
     if vm.get('type', 'unknown') == 'qemu':
         cluster_data['status']['vms_total'] += 1
