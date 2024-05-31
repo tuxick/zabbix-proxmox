@@ -12,8 +12,8 @@ Get cluster and node details from the Proxmox API and report them to Zabbix usin
 
 The script can run on any host with Python, a functional zabbix_sender and access to the Proxmox API. A Zabbix server or Zabbix proxy would be logical candidates.
 
-  * Install Python proxmoxer: `pip install proxmoxer`
-  * Install Python requests: `pip install requests`
+  * Install Python proxmoxer: `pip install proxmoxer` or `apt install python3-proxmoxer`
+  * Install Python requests: `pip install requests` or `apt install python3-requests`
   * Copy script **scripts/proxmox_cluster.py** and make it executable. The script is executed from cron or systemd timers and can be placed anywhere logical.
   * Import the valuemap **templates/snmp_boolean_type_valuemap.xml** into your Zabbix server. This valuemap is used to display quorum and nodes online status.
   * Import the template **templates/proxmox_cluster_template.xml** into your Zabbix server.
